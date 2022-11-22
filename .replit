@@ -1,7 +1,3 @@
-run = "run index.php"
+run = ["php", "main.php"]
 
-[nix]
-
-[nix.channel]
-channel = "stable-22_05"
-
+entrypoint = "index.php"

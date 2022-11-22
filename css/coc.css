@@ -1,0 +1,80 @@
+:root {
+  --color-bg: #fff;
+  --color-text: #000;
+  --color-bg-card: #fff;
+  --color-links: #1d1283;
+  --color-events: #e30162;
+}
+
+.dark-theme {
+  --color-bg: #1c1b22;
+  --color-text: #e1e1ec;
+  --color-bg-card: #312f3b;
+  --color-links: #0080ff;
+  --color-events: #ff0090;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font: 16px 'Roboto', sans-serif;
+  background-color: var(--color-bg);
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  margin: 20px;
+}
+main article {
+  max-width: 750px;
+}
+
+.welcome-title {
+  text-align: center;
+  font-size: 2rem;
+  color: var(--color-text);
+}
+
+.coc-header {
+  text-align: center;
+  font-weight: 700;
+  padding: 20px;
+  color: var(--color-text);
+}
+
+.coc-list {
+  text-align: left;
+  color: var(--color-text);
+}
+
+a {
+  text-decoration: none;
+  color: var(--color-links);
+}
+
+.coc-list-elements {
+  margin: 20px 0;
+}
+
+footer {
+  position: relative;
+  margin-top: 40px;
+  bottom: 0;
+  width: 100%;
+  padding: 15px;
+  text-align: center;
+  color: var(--color-text);
+}
+
+@media only screen and (max-width: 600px) {
+  .coc-list-elements {
+    margin-left: 20px;
+    margin-right: 15px;
+  }
+}

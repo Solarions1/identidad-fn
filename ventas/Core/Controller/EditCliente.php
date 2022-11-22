@@ -1,0 +1,221 @@
+<?php
+/*
+ Software diseñado para Identidad, todos los derechos reservados
+ */
+
+namespace FacturaScripts\Core\Controller;
+
+use FacturaScripts\Core\Base\DataBase\DataBaseWhere;
+use FacturaScripts\Core\Lib\ExtendedController\BaseView;
+use FacturaScripts\Core\Lib\ExtendedController\ComercialContactController;
+use FacturaScripts\Dinamic\Lib\CustomerRiskTools;
+use FacturaScripts\Dinamic\Lib\RegimenIVA;
+
+/**
+ * Controller to edit a single item from the Cliente model
+ *
+ * @author Carlos García Gómez          <carlos@facturascripts.com>
+ * @author Artex Trading sa             <jcuello@artextrading.com>
+ * @author Fco. Antonio Moreno Pérez    <famphuelva@gmail.com>
+ */
+class EditCliente extends ComercialContactController
+{
+
+    /**
+     * Returns the customer's risk on pending delivery notes.
+     *
+     * @return string
+     */
+    public function getDeliveryNotesRisk(): string
+    {
+        $codcliente = $this->getViewModelValue('EditCliente', 'codcliente');
+        $total = empty($codcliente) ? 0 : CustomerRiskTools::getDeliveryNotesRisk($codcliente);
+        return $this->toolBox()->coins()->format($total);
+    }
+
+    public function getImageUrl(): string
+    {
+        $mvn = $this->getMainViewName();
+        return $this->views[$mvn]->model->gravatar();
+    }
+
+    /**
+     * Returns the customer's risk on unpaid invoices.
+     *
+     * @return string
+     */
+    public function getInvoicesRisk(): string
+    {
+        $codcliente = $this->getViewModelValue('EditCliente', 'codcliente');
+        $total = empty($codcliente) ? 0 : CustomerRiskTools::getInvoicesRisk($codcliente);
+        return $this->toolBox()->coins()->format($total);
+    }
+
+    public function getModelClassName(): string
+    {
+        return 'Cliente';
+    }
+
+    /**
+     * Returns the customer's risk on pending orders.
+     *
+     * @return string
+     */
+    public function getOrdersRisk(): string
+    {
+        $codcliente = $this->getViewModelValue('EditCliente', 'codcliente');
+        $total = empty($codcliente) ? 0 : CustomerRiskTools::getOrdersRisk($codcliente);
+        return $this->toolBox()->coins()->format($total);
+    }
+
+    public function getPageData(): array
+    {
+        $data = parent::getPageData();
+        $data['menu'] = 'sales';
+        $data['title'] = 'customer';
+        $data['icon'] = 'fas fa-users';
+        return $data;
+    }
+
+    protected function createDocumentView(string $viewName, string $model, string $label)
+    {
+        $this->createCustomerListView($viewName, $model, $label);
+        $this->addButtonGroupDocument($viewName);
+        $this->addButtonApproveDocument($viewName);
+    }
+
+    protected function createInvoiceView(string $viewName)
+    {
+        $this->createCustomerListView($viewName, 'FacturaCliente', 'invoices');
+        $this->addButtonLockInvoice($viewName);
+    }
+
+    /**
+     * Create views
+     */
+    protected function createViews()
+    {
+        parent::createViews();
+        $this->createContactsView();
+        $this->addEditListView('EditCuentaBancoCliente', 'CuentaBancoCliente', 'customer-banking-accounts', 'fas fa-piggy-bank');
+        $this->createSubaccountsView();
+        $this->createEmailsView();
+        $this->createViewDocFiles();
+
+        $this->createInvoiceView('ListFacturaCliente');
+        $this->createLineView('ListLineaFacturaCliente', 'LineaFacturaCliente');
+        $this->createDocumentView('ListAlbaranCliente', 'AlbaranCliente', 'delivery-notes');
+        $this->createDocumentView('ListPedidoCliente', 'PedidoCliente', 'orders');
+        $this->createDocumentView('ListPresupuestoCliente', 'PresupuestoCliente', 'estimations');
+        $this->createReceiptView('ListReciboCliente', 'ReciboCliente');
+    }
+
+    /**
+     * @return bool
+     */
+    protected function editAction()
+    {
+        $return = parent::editAction();
+        if ($return && $this->active === $this->getMainViewName()) {
+            $this->checkSubaccountLength($this->getModel()->codsubcuenta);
+
+            // update contact email and phones when customer email or phones are updated
+            $this->updateContact($this->views[$this->active]->model);
+        }
+
+        return $return;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function insertAction()
+    {
+        if (false === parent::insertAction()) {
+            return false;
+        }
+
+        // redirect to returnUrl if return is defined
+        $returnUrl = $this->request->query->get('return');
+        if (!empty($returnUrl)) {
+            $model = $this->views[$this->active]->model;
+            $this->redirect($returnUrl . '?' . $model->primaryColumn() . '=' . $model->primaryColumnValue());
+        }
+
+        return true;
+    }
+
+    /**
+     * Load view data procedure
+     *
+     * @param string $viewName
+     * @param BaseView $view
+     */
+    protected function loadData($viewName, $view)
+    {
+        $codcliente = $this->getViewModelValue('EditCliente', 'codcliente');
+        $where = [new DataBaseWhere('codcliente', $codcliente)];
+
+        switch ($viewName) {
+            case 'EditCuentaBancoCliente':
+                $view->loadData('', $where, ['codcuenta' => 'DESC']);
+                break;
+
+            case 'EditDireccionContacto':
+                $view->loadData('', $where, ['idcontacto' => 'DESC']);
+                break;
+
+            case 'ListAlbaranCliente':
+            case 'ListFacturaCliente':
+            case 'ListPedidoCliente':
+            case 'ListPresupuestoCliente':
+            case 'ListReciboCliente':
+                $view->loadData('', $where);
+                break;
+
+            case 'ListLineaFacturaCliente':
+                $inSQL = 'SELECT idfactura FROM facturascli WHERE codcliente = ' . $this->dataBase->var2str($codcliente);
+                $where = [new DataBaseWhere('idfactura', $inSQL, 'IN')];
+                $view->loadData('', $where);
+                break;
+
+            default:
+                parent::loadData($viewName, $view);
+                break;
+        }
+    }
+
+    protected function setCustomWidgetValues(string $viewName)
+    {
+        // Load values option to VAT Type select input
+        $columnVATType = $this->views[$viewName]->columnForName('vat-regime');
+        if ($columnVATType && $columnVATType->widget->getType() === 'select') {
+            $columnVATType->widget->setValuesFromArrayKeys(RegimenIVA::all(), true);
+        }
+
+        // Model exists?
+        if (false === $this->views[$viewName]->model->exists()) {
+            $this->views[$viewName]->disableColumn('billing-address');
+            $this->views[$viewName]->disableColumn('shipping-address');
+            return;
+        }
+
+        // Search for client contacts
+        $codcliente = $this->getViewModelValue($viewName, 'codcliente');
+        $where = [new DataBaseWhere('codcliente', $codcliente)];
+        $contacts = $this->codeModel->all('contactos', 'idcontacto', 'descripcion', false, $where);
+
+        // Load values option to default billing address from client contacts list
+        $columnBilling = $this->views[$viewName]->columnForName('billing-address');
+        if ($columnBilling && $columnBilling->widget->getType() === 'select') {
+            $columnBilling->widget->setValuesFromCodeModel($contacts);
+        }
+
+        // Load values option to default shipping address from client contacts list
+        $columnShipping = $this->views[$viewName]->columnForName('shipping-address');
+        if ($columnShipping && $columnShipping->widget->getType() === 'select') {
+            $contacts2 = $this->codeModel->all('contactos', 'idcontacto', 'descripcion', true, $where);
+            $columnShipping->widget->setValuesFromCodeModel($contacts2);
+        }
+    }
+}

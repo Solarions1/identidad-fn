@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Software diseñado para Identidad, todos los derechos reservados
+ *
+ * @author Artex Trading sa     <jcuello@artextrading.com>
+ * @author Carlos García Gómez  <carlos@facturascripts.com>
+-->
+<view>
+    <columns>
+        <group name="data" numcolumns="12">
+            <column name="name" order="100">
+                <widget type="text" fieldname="nombre" maxlength="100" required="true"/>
+            </column>
+            <column name="code" description="optional" display="none" order="110">
+                <widget type="text" fieldname="codtrans" icon="fas fa-hashtag" maxlength="8" readonly="dinamic"/>
+            </column>
+            <column name="phone" order="120">
+                <widget type="text" fieldname="telefono" maxlength="30" icon="fas fa-phone"/>
+            </column>
+            <column name="url" order="130">
+                <widget type="link" fieldname="web" maxlength="100"/>
+            </column>
+        </group>
+        <group name="data2" numcolumns="12">
+            <column name="active" order="100">
+                <widget type="checkbox" fieldname="activo"/>
+            </column>
+        </group>
+    </columns>
+</view>

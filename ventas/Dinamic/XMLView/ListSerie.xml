@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Software diseñado para Identidad, todos los derechos reservados
+ *
+ * @author Artex Trading sa     <jcuello@artextrading.com>
+ * @author Carlos García Gómez  <carlos@facturascripts.com>
+-->
+<view>
+    <columns>
+        <column name="code" order="100">
+            <widget type="text" fieldname="codserie" onclick="EditSerie"/>
+        </column>
+        <column name="description" order="110">
+            <widget type="textarea" fieldname="descripcion"/>
+        </column>
+        <column name="journal" display="none" order="120">
+            <widget type="select" fieldname="iddiario">
+                <values source="diarios" fieldcode="iddiario" fieldtitle="descripcion"/>
+            </widget>
+        </column>
+        <column name="channel" display="none" order="130">
+            <widget type="number" fieldname="canal" decimal="0" min="0"/>
+        </column>
+        <column name="without-taxation" display="center" order="140">
+            <widget type="checkbox" fieldname="siniva"/>
+        </column>
+    </columns>
+    <rows>
+        <row type="status">
+            <option color="warning" fieldname="siniva">1</option>
+        </row>
+    </rows>
+</view>

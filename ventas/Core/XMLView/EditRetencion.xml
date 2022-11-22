@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Software diseñado para Identidad, todos los derechos reservados
+ *
+ * @author Carlos García Gómez          <carlos@facturascripts.com>
+ * @author Cristo M. Estévez Hernández  <cristom.estevez@gmail.com>
+-->
+<view>
+    <columns>
+        <group name="data" numcolumns="12">
+            <column name="description" numcolumns="10" order="100">
+                <widget type="text" fieldname="descripcion" maxlength="50" required="true"/>
+            </column>
+            <column name="code" description="optional" numcolumns="2" order="110">
+                <widget type="text" fieldname="codretencion" icon="fas fa-hashtag" maxlength="10"/>
+            </column>
+            <column name="percentage" numcolumns="3" order="120">
+                <widget type="percentage" decimal="2" fieldname="porcentaje" required="true"/>
+            </column>
+            <column name="subaccount-irpf" description="optional" numcolumns="3" order="130">
+                <widget type="autocomplete" fieldname="codsubcuentaret">
+                    <values source="subcuentas" fieldcode="codsubcuenta" fieldtitle="descripcion"/>
+                </widget>
+            </column>
+            <column name="subaccount-irpf-creditor" description="optional" numcolumns="3" order="140">
+                <widget type="autocomplete" fieldname="codsubcuentaacr">
+                    <values source="subcuentas" fieldcode="codsubcuenta" fieldtitle="descripcion"/>
+                </widget>
+            </column>
+        </group>
+    </columns>
+</view>

@@ -1,0 +1,1 @@
+[{"compatible":true,"description":"Permite realizar y restaurar copias de seguridad.","enabled":true,"min_php":7.2,"min_version":2021,"name":"Backup","require":[],"version":1.2}]

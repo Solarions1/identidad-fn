@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Software diseñado para Identidad, todos los derechos reservados
+ *
+ * @author Artex Trading sa     <jferrer@artextrading.com>
+ * @author Carlos García Gómez  <carlos@facturascripts.com>
+-->
+<view>
+    <columns>
+        <group name="data" numcolumns="12">
+            <column name="description" order="100">
+                <widget type="text" fieldname="descripcion" maxlength="255" required="true"/>
+            </column>
+            <column name="code" numcolumns="2" order="110">
+                <widget type="text" fieldname="codcuentaesp" icon="fas fa-hashtag" maxlength="6" readonly="dinamic" required="true"/>
+            </column>
+        </group>
+    </columns>
+</view>

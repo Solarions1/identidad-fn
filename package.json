@@ -1,0 +1,20 @@
+{
+  "name": "main",
+  "version": "1.0.0",
+  "description": "Página principal de Identidad",
+  "main": "index.js",
+  "scripts": {
+    "check": "prettier --check .",
+    "fix": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "pre-commit": "^1.2.2",
+    "prettier": "2.2.1"
+  },
+  "pre-commit": [
+    "check"
+  ]
+}
